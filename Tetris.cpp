@@ -105,8 +105,12 @@ void initBoard(){
 void draw(){
     system("cls");
 
-    for (int i = 0 ; i < H ; i++, cout<<endl)
-        for (int j = 0 ; j < W ; j++) cout<<board[i][j];
+    for (int i = 0; i < H; i++){
+        for (int j = 0; j < W; j++){
+            cout << board[i][j] << board[i][j];
+        }
+        cout << endl;
+    }
 }
 
 int removeLine() {
