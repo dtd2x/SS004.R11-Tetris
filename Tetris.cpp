@@ -7,6 +7,19 @@ using namespace std;
 char board[H][W] = {};
 
 int x, y, b;
+
+// Toc do roi: thoi gian cho (ms) giua 2 lan khoi roi xuong 1 o.
+// Moi hang bi xoa -> giam SPEED_STEP ms (roi nhanh hon), khong thap hon MIN_SPEED.
+#define START_SPEED 500
+#define SPEED_STEP  50
+#define MIN_SPEED   100
+int speed = START_SPEED;
+
+void increaseSpeed(int linesRemoved){
+    if (linesRemoved <= 0) return;
+    speed -= linesRemoved * SPEED_STEP;
+    if (speed < MIN_SPEED) speed = MIN_SPEED;
+}
 char blocks[][4][4] ={
         {{' ','I',' ',' '},
          {' ','I',' ',' '},
@@ -163,12 +176,13 @@ int main()
         if (canMove(0,1)) y++;
         else{
             block2Board();
-            removeLine();
+            int lines = removeLine();
+            increaseSpeed(lines);
             x = 5; y = 0; b = rand()%7;
         }
         block2Board();
         draw();
-        _sleep(500);
+        _sleep(speed);
     }
     return 0;
 }
