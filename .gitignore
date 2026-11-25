@@ -1,4 +1,3 @@
-@"
 build/
 out/
 .vs/
@@ -7,4 +6,3 @@ out/
 *.o
 .DS_Store
 Thumbs.db
-"@ | Set-Content .gitignore
