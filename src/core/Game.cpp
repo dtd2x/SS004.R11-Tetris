@@ -101,6 +101,12 @@ void Game::hardDrop() {
 }
 
 void Game::rotate() {
+    boardDelBlock();
+    cur.rotateCW();
+    bool ok = canMove(0, 0);
+    if (!ok) cur.rotateCCW();
+    block2Board();
+    if (ok) events.push_back(GameEvent::Rotate);
 }
 
 void Game::hold() {
