@@ -41,6 +41,7 @@ void Piece::rotateCCW() {
 Bag::Bag() : rng(std::random_device{}()) {}
 
 int Bag::next() {
+    return int(rng() % PIECE_COUNT);
     if (pool.empty()) {
         for (int t = 0; t < PIECE_COUNT; t++) pool.push_back(t);
         std::shuffle(pool.begin(), pool.end(), rng);
