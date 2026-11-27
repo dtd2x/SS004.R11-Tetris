@@ -41,6 +41,13 @@ void Renderer::drawGame(sf::RenderWindow& win, Game& g, const Theme& th, sf::Vec
     bg.setFillColor(th.boardBg);
     win.draw(bg);
 
+    // ghost: ve truoc de khoi that de len
+    int gy = g.ghostY();
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (g.cur.shape[i][j] != ' ' && gy != g.y)
+                drawCell(win, cellX(g.x + j) + off.x, cellY(gy + i) + off.y, th.piece[g.cur.type], true);
+
     // board (gom ca khoi dang roi, theo quy uoc cua thay)
     for (int r = 0; r < H; r++)
         for (int c = 0; c < W; c++) {

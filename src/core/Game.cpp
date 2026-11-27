@@ -127,7 +127,20 @@ int Game::fallInterval() const {
 }
 
 int Game::ghostY() {
-    return y;
+    boardDelBlock();
+
+    int oldY = y;
+
+    while (canMove(0, 1))
+        y++;
+
+    int gy = y;
+
+    y = oldY;
+
+    block2Board();
+
+    return gy;
 }
 
 void Game::lockPiece() {
