@@ -26,13 +26,26 @@ void Piece::reset(int t) {
 }
 
 void Piece::rotateCW() {
+    if (type == PIECE_O) return;           // O xoay khong doi
+    char old[4][4];
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++) old[i][j] = shape[i][j];
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++) shape[j][3 - i] = old[i][j];
 }
 
 void Piece::rotateCCW() {
+    rotateCW(); rotateCW(); rotateCW();
 }
 
 Bag::Bag() : rng(std::random_device{}()) {}
 
 int Bag::next() {
-    return int(rng() % PIECE_COUNT);
+    if (pool.empty()) {
+        for (int t = 0; t < PIECE_COUNT; t++) pool.push_back(t);
+        std::shuffle(pool.begin(), pool.end(), rng);
+    }
+    int t = pool.back();
+    pool.pop_back();
+    return t;
 }
