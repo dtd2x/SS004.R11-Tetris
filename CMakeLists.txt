@@ -24,8 +24,9 @@ add_executable(Tetris
     src/render/Theme.cpp
     src/render/Particles.cpp
     src/audio/Audio.cpp
+    src/net/Online.cpp
 )
-target_link_libraries(Tetris PRIVATE sfml-graphics sfml-audio)
+target_link_libraries(Tetris PRIVATE sfml-graphics sfml-audio sfml-network)
 target_compile_features(Tetris PRIVATE cxx_std_17)
 if(MSVC)
     target_compile_options(Tetris PRIVATE /utf-8)
