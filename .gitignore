@@ -6,3 +6,5 @@ out/
 *.o
 .DS_Store
 Thumbs.db
+server/scores.db
+__pycache__/
