@@ -136,6 +136,17 @@ int Game::ghostY() {
 
 void Game::lockPiece() {
     events.push_back(GameEvent::Lock);
-    removeLine();
+    int n = removeLine();
+    if (n > 0) {
+        static const int POINTS[5] = { 0, 100, 300, 500, 800 };
+        score += POINTS[n] * level;
+        lines += n;
+        events.push_back(n == 4 ? GameEvent::Tetris : GameEvent::LineClear);
+        int newLevel = lines / 10 + 1;
+        if (newLevel > level) {
+            level = newLevel;
+            events.push_back(GameEvent::LevelUp);
+        }
+    }
     spawn();
 }
