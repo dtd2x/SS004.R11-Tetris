@@ -102,6 +102,13 @@ bool Game::softDrop() {
 }
 
 void Game::hardDrop() {
+    boardDelBlock();
+    int dropped = 0;
+    while (canMove(0, 1)) { y++; dropped++; }
+    block2Board();
+    score += 2 * dropped;
+    events.push_back(GameEvent::HardDrop);
+    lockPiece();
 }
 
 void Game::rotate() {
