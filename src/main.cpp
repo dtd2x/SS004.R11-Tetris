@@ -1,5 +1,6 @@
 #include "Paths.h"
 #include "core/Game.h"
+#include "core/HighScore.h"
 #include "input/Input.h"
 #include "render/Layout.h"
 #include "render/Renderer.h"
@@ -8,7 +9,7 @@
 #include <ctime>
 #include <cstdlib>
 
-enum class Screen { Menu, Playing };
+enum class Screen { Menu, Playing, Paused, Result };
 
 int main(int argc, char** argv) {
     (void)argc;
@@ -22,13 +23,14 @@ int main(int argc, char** argv) {
     Game game;
     Input input;
     Renderer renderer;
+    HighScore scores;
     renderer.init();
     int themeIdx = loadThemeIndex();
     game.reset(Mode::Marathon);   // de man hinh menu co board phia sau
     game.events.clear();
 
     Screen screen = Screen::Menu;
-    int menuSel = 0;
+    int menuSel = 0, pauseSel = 0;
     float fallTimer = 0.f;
     sf::Clock clock;
 
@@ -63,6 +65,19 @@ int main(int argc, char** argv) {
                     if (menuSel == 3) { themeIdx = (themeIdx + 1) % THEME_COUNT; saveThemeIndex(themeIdx); }
                     if (menuSel == 4) window.close();
                 }
+            } else if (screen == Screen::Paused) {
+                const int N = 3;   // Tiep tuc, Choi lai, Ve menu
+                if (k == sf::Keyboard::Up)   pauseSel = (pauseSel + N - 1) % N;
+                if (k == sf::Keyboard::Down) pauseSel = (pauseSel + 1) % N;
+                if (k == sf::Keyboard::Escape) pauseSel = 0;
+                if (k == sf::Keyboard::Enter || k == sf::Keyboard::Escape) {
+                    if (pauseSel == 0) { input.reset(); screen = Screen::Playing; }
+                    if (pauseSel == 1) startGame(game.mode);
+                    if (pauseSel == 2) screen = Screen::Menu;
+                }
+            } else if (screen == Screen::Result) {
+                if (k == sf::Keyboard::Enter)  startGame(game.mode);
+                if (k == sf::Keyboard::Escape) screen = Screen::Menu;
             }
         }
 
@@ -77,7 +92,7 @@ int main(int argc, char** argv) {
                 case Action::HardDrop: game.hardDrop(); fallTimer = 0; break;
                 case Action::Rotate:   game.rotate(); break;
                 case Action::Hold:     game.hold(); break;
-                case Action::Pause:    screen = Screen::Menu; break;
+                case Action::Pause:    pauseSel = 0; screen = Screen::Paused; break;
                 }
                 if (game.over || game.won || screen != Screen::Playing) break;
             }
@@ -90,7 +105,7 @@ int main(int argc, char** argv) {
 
             game.events.clear();
 
-            if (game.over || game.won) screen = Screen::Menu;
+            if (game.over || game.won) screen = Screen::Result;
         }
 
         // ---------- ve ----------
@@ -100,6 +115,10 @@ int main(int argc, char** argv) {
             renderer.drawMenu(window, "TETRIS",
                 { "Marathon", "Sprint 40 hàng", "Ultra 2 phút", std::string("Theme: ") + th.name, "Thoát" },
                 menuSel, th);
+        if (screen == Screen::Paused)
+            renderer.drawMenu(window, "TẠM DỪNG", { "Tiếp tục", "Chơi lại", "Về menu" }, pauseSel, th);
+        if (screen == Screen::Result)
+            renderer.drawResult(window, game, scores, th);
         window.display();
     }
     return 0;
