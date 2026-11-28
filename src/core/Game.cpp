@@ -70,9 +70,13 @@ void Game::spawn() {
     next[0] = next[1]; next[1] = next[2]; next[2] = bag.next();
     x = W / 2 - 2; y = 0;
     holdUsed = false;
+    if (!canMove(0, 0)) {                 
+        over = true;
+        events.push_back(GameEvent::GameOver);
+        return;
+    }
     block2Board();
 }
-
 void Game::moveLeft() {
     boardDelBlock();
     bool ok = canMove(-1, 0);
