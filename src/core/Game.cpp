@@ -114,14 +114,33 @@ void Game::hardDrop() {
 void Game::rotate() {
     boardDelBlock();
     cur.rotateCW();
-    bool ok = canMove(0, 0);
+    static const int kicks[] = { 0, -1, 1, -2, 2 };
+    bool ok = false;
+    for (int dx : kicks)
+        if (canMove(dx, 0)) { x += dx; ok = true; break; }
     if (!ok) cur.rotateCCW();
     block2Board();
     if (ok) events.push_back(GameEvent::Rotate);
 }
 
 void Game::hold() {
+    if (holdUsed) return;
+    boardDelBlock();
+    int t = cur.type;
+    if (holdType == PIECE_NONE) {
+        holdType = t;
+        spawn();                           // spawn tu dat lai holdUsed = false
+    } else {
+        cur.reset(holdType);
+        holdType = t;
+        x = W / 2 - 2; y = 0;
+        if (!canMove(0, 0)) { over = true; events.push_back(GameEvent::GameOver); return; }
+        block2Board();
+    }
+    holdUsed = true;
+    events.push_back(GameEvent::Hold);
 }
+
 
 void Game::tick() {
     if (over || won) return;

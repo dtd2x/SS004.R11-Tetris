@@ -43,7 +43,8 @@ int main(int argc, char** argv) {
                 case Action::Left:     game.moveLeft(); break;
                 case Action::Right:    game.moveRight(); break;
                 case Action::SoftDrop: if (game.softDrop()) fallTimer = 0; break;
-		case Action::HardDrop: game.hardDrop(); fallTimer = 0; break;
+                case Action::Hold:     game.hold(); break;
+		            case Action::HardDrop: game.hardDrop(); fallTimer = 0; break;
                 case Action::Rotate:   game.rotate(); break;
                 default: break;
                 }
