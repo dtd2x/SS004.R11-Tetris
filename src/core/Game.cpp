@@ -103,7 +103,10 @@ void Game::hardDrop() {
 void Game::rotate() {
     boardDelBlock();
     cur.rotateCW();
-    bool ok = canMove(0, 0);
+    static const int kicks[] = { 0, -1, 1, -2, 2 };
+    bool ok = false;
+    for (int dx : kicks)
+        if (canMove(dx, 0)) { x += dx; ok = true; break; }
     if (!ok) cur.rotateCCW();
     block2Board();
     if (ok) events.push_back(GameEvent::Rotate);
