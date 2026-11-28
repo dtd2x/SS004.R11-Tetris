@@ -127,7 +127,7 @@ void Game::update(float dt) {
 }
 
 int Game::fallInterval() const {
-    return 500;
+    return std::max(80, 800 - (level - 1) * 70);
 }
 
 int Game::ghostY() {
