@@ -70,9 +70,13 @@ void Game::spawn() {
     next[0] = next[1]; next[1] = next[2]; next[2] = bag.next();
     x = W / 2 - 2; y = 0;
     holdUsed = false;
+    if (!canMove(0, 0)) {                 
+        over = true;
+        events.push_back(GameEvent::GameOver);
+        return;
+    }
     block2Board();
 }
-
 void Game::moveLeft() {
     boardDelBlock();
     bool ok = canMove(-1, 0);
@@ -98,6 +102,13 @@ bool Game::softDrop() {
 }
 
 void Game::hardDrop() {
+    boardDelBlock();
+    int dropped = 0;
+    while (canMove(0, 1)) { y++; dropped++; }
+    block2Board();
+    score += 2 * dropped;
+    events.push_back(GameEvent::HardDrop);
+    lockPiece();
 }
 
 void Game::rotate() {
@@ -142,15 +153,39 @@ void Game::update(float dt) {
 }
 
 int Game::fallInterval() const {
-    return 500;
+    return std::max(80, 800 - (level - 1) * 70);
 }
 
 int Game::ghostY() {
-    return y;
+    boardDelBlock();
+
+    int oldY = y;
+
+    while (canMove(0, 1))
+        y++;
+
+    int gy = y;
+
+    y = oldY;
+
+    block2Board();
+
+    return gy;
 }
 
 void Game::lockPiece() {
     events.push_back(GameEvent::Lock);
-    removeLine();
+    int n = removeLine();
+    if (n > 0) {
+        static const int POINTS[5] = { 0, 100, 300, 500, 800 };
+        score += POINTS[n] * level;
+        lines += n;
+        events.push_back(n == 4 ? GameEvent::Tetris : GameEvent::LineClear);
+        int newLevel = lines / 10 + 1;
+        if (newLevel > level) {
+            level = newLevel;
+            events.push_back(GameEvent::LevelUp);
+        }
+    }
     spawn();
 }
